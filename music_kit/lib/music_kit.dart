@@ -109,4 +109,6 @@ class MusicKit {
 
   Future<MusicPlayerShuffleMode> toggleShuffleMode() =>
       _platform.toggleShuffleMode();
+
+  Future<void> setPlaybackTime(double time) => _platform.setPlaybackTime(time);
 }

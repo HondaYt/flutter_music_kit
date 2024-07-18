@@ -432,4 +432,11 @@ class ChannelHandler(
     }
     result.success(shuffleMode)
   }
+
+  @Keep
+  @Suppress("unused", "UNUSED_PARAMETER")
+  fun setPlaybackTime(call: MethodCall, result: MethodChannel.Result) {
+    result.notImplemented()
+  }
+
 }

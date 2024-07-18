@@ -237,4 +237,9 @@ class MethodChannelMusicKit extends MusicKitPlatform {
     final resp = await methodChannel.invokeMethod<int>('toggleShuffleMode');
     return MusicPlayerShuffleMode.values[resp ?? 0];
   }
+
+  @override
+  Future<void> setPlaybackTime(double time) {
+    return methodChannel.invokeMethod('setPlaybackTime', time);
+  }
 }

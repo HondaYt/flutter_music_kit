@@ -14,7 +14,7 @@ extension SwiftMusicKitPlugin {
   func setQueue(itemType: String, itemObject: ResourceObject, result: @escaping FlutterResult) {
     do {
       let playableItem: MusicItem? = try parseMusicItem(itemType, from: itemObject)
-      
+
       if let item = playableItem as? PlayableMusicItem {
         musicPlayer.setQueue(item: item)
         result(nil)
@@ -25,71 +25,86 @@ extension SwiftMusicKitPlugin {
       result(FlutterError(code: kErrorPlay, message: error.localizedDescription))
     }
   }
-  
-  func setQueue(itemType: String, itemObjects: Array<ResourceObject>, startingAt: Int? = nil, result: @escaping FlutterResult) {
+
+  func setQueue(
+    itemType: String, itemObjects: [ResourceObject], startingAt: Int? = nil,
+    result: @escaping FlutterResult
+  ) {
     do {
       let itemType = MusicItemType(itemType)
 
       switch itemType {
       case .album:
-        let albums: Array<Album> = try decoded(json: itemObjects)
-        musicPlayer.setQueue(items: MusicItemCollection(albums), startingAt: startingAt != nil ? albums[startingAt!] : nil)
-        
+        let albums: [Album] = try decoded(json: itemObjects)
+        musicPlayer.setQueue(
+          items: MusicItemCollection(albums),
+          startingAt: startingAt != nil ? albums[startingAt!] : nil)
+
       case .playlist:
-        let playlists: Array<Playlist> = try decoded(json: itemObjects)
-        musicPlayer.setQueue(items: MusicItemCollection(playlists), startingAt: startingAt != nil ? playlists[startingAt!] : nil)
-        
+        let playlists: [Playlist] = try decoded(json: itemObjects)
+        musicPlayer.setQueue(
+          items: MusicItemCollection(playlists),
+          startingAt: startingAt != nil ? playlists[startingAt!] : nil)
+
       case .song, .musicVideo, .track:
-        let tracks: Array<Track> = try decoded(json: itemObjects)
-        musicPlayer.setQueue(items: MusicItemCollection(tracks), startingAt: startingAt != nil ? tracks[startingAt!] : nil)
-        
+        let tracks: [Track] = try decoded(json: itemObjects)
+        musicPlayer.setQueue(
+          items: MusicItemCollection(tracks),
+          startingAt: startingAt != nil ? tracks[startingAt!] : nil)
+
       case .station:
-        let stations: Array<Station> = try decoded(json: itemObjects)
-        musicPlayer.setQueue(items: MusicItemCollection(stations), startingAt: startingAt != nil ? stations[startingAt!] : nil)
-        
+        let stations: [Station] = try decoded(json: itemObjects)
+        musicPlayer.setQueue(
+          items: MusicItemCollection(stations),
+          startingAt: startingAt != nil ? stations[startingAt!] : nil)
+
       default:
         break
       }
-      
+
       result(nil)
     } catch {
       //
       result(FlutterError(code: kErrorPlay, message: error.localizedDescription))
     }
   }
-  
+
   func repeatMode(_ result: @escaping FlutterResult) {
     result((musicPlayer.state.repeatMode ?? MusicPlayer.RepeatMode.none).intValue)
   }
-  
+
   func setRepeatMode(_ mode: Int, result: @escaping FlutterResult) {
     musicPlayer.state.repeatMode = MusicPlayer.RepeatMode(mode)
     result(nil)
   }
-  
+
   func toggleRepeatMode(_ result: @escaping FlutterResult) {
     let nextRepeatMode = (musicPlayer.repeatMode.intValue + 2) % 3
     musicPlayer.state.repeatMode = MusicPlayer.RepeatMode(nextRepeatMode)
     result(nextRepeatMode)
   }
-  
+
   func shuffleMode(_ result: @escaping FlutterResult) {
     result((musicPlayer.state.shuffleMode ?? MusicPlayer.ShuffleMode.off).intValue)
   }
-  
+
   func setShuffleMode(_ mode: Int, result: @escaping FlutterResult) {
     musicPlayer.state.shuffleMode = MusicPlayer.ShuffleMode(mode)
     result(nil)
   }
-  
+
   func toggleShuffleMode(_ result: @escaping FlutterResult) {
-    let nextShuffleMode = musicPlayer.shuffleMode == MusicPlayer.ShuffleMode.off ? MusicPlayer.ShuffleMode.songs : MusicPlayer.ShuffleMode.off
+    let nextShuffleMode =
+      musicPlayer.shuffleMode == MusicPlayer.ShuffleMode.off
+      ? MusicPlayer.ShuffleMode.songs : MusicPlayer.ShuffleMode.off
     musicPlayer.state.shuffleMode = nextShuffleMode
     result(nextShuffleMode.intValue)
   }
 }
 
-fileprivate func parseMusicItem(_ itemType: String, from itemObject: ResourceObject) throws -> MusicItem? {
+private func parseMusicItem(_ itemType: String, from itemObject: ResourceObject) throws
+  -> MusicItem?
+{
   let itemType = MusicItemType(itemType)
 
   switch itemType {
@@ -115,14 +130,18 @@ fileprivate func parseMusicItem(_ itemType: String, from itemObject: ResourceObj
 
 extension ApplicationMusicPlayer {
   func setQueue(item: PlayableMusicItem) {
-    queue = [item]
+    // queue = [item]
+    let entry = MusicPlayer.Queue.Entry(item)
+    queue = ApplicationMusicPlayer.Queue([entry])
   }
-  
+
   func setQueue<MusicItemType: PlayableMusicItem>(items: MusicItemCollection<MusicItemType>) {
     setQueue(items: items, startingAt: nil)
   }
 
-  func setQueue<MusicItemType: PlayableMusicItem>(items: MusicItemCollection<MusicItemType>, startingAt: MusicItemType?)  {
+  func setQueue<MusicItemType: PlayableMusicItem>(
+    items: MusicItemCollection<MusicItemType>, startingAt: MusicItemType?
+  ) {
     queue = ApplicationMusicPlayer.Queue(for: items, startingAt: startingAt)
   }
 }
@@ -131,7 +150,7 @@ extension MusicPlayer {
   var repeatMode: RepeatMode {
     return state.repeatMode ?? RepeatMode.none
   }
-  
+
   var shuffleMode: ShuffleMode {
     return state.shuffleMode ?? ShuffleMode.off
   }

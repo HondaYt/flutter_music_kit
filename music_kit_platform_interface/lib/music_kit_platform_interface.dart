@@ -163,4 +163,8 @@ abstract class MusicKitPlatform extends PlatformInterface {
   Future<MusicPlayerShuffleMode> toggleShuffleMode() async {
     throw UnimplementedError('toggleShuffleMode() has not been implemented.');
   }
+
+  Future<void> setPlaybackTime(double time) async {
+    throw UnimplementedError('setPlaybackTime() has not been implemented.');
+  }
 }

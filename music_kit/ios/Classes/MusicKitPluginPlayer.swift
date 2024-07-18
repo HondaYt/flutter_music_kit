@@ -5,9 +5,9 @@
 //  Created by Longjiang Lv on 2022/5/26.
 //
 
+import Combine
 import Foundation
 import MusicKit
-import Combine
 
 let kErrorPlay = "ERR_PLAYER_PLAY"
 let kErrorPrepareToPlay = "ERR_PLAYER_PREPARE_TO_PLAY"
@@ -22,7 +22,7 @@ extension SwiftMusicKitPlugin {
   func playbackTime(_ result: @escaping FlutterResult) {
     result(musicPlayer.playbackTime)
   }
-  
+
   func musicPlayerState(_ result: @escaping FlutterResult) {
     result(musicPlayer.state.jsonObject())
   }
@@ -85,7 +85,11 @@ extension SwiftMusicKitPlugin {
     musicPlayer.stop()
     result(nil)
   }
-  
+
+  func setPlaybackTime(_ time: Double, result: @escaping FlutterResult) {
+    musicPlayer.playbackTime = TimeInterval(time)
+    result(nil)
+  }
 }
 
 enum MusicItemType {
@@ -100,7 +104,7 @@ enum MusicItemType {
   case song
   case station
   case track
-  
+
   init?(_ value: String) {
     switch value.lowercased() {
     case "albums": self = .album
@@ -124,15 +128,17 @@ extension SwiftMusicKitPlugin {
     let musicPlayer: ApplicationMusicPlayer
     private var playerTask: Task<(), Never>?
     private var cancellable: AnyCancellable?
-    
+
     init(musicPlayer: ApplicationMusicPlayer) {
       self.musicPlayer = musicPlayer
       super.init()
     }
-    
-    func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
+
+    func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink)
+      -> FlutterError?
+    {
       eventSink = events
-      
+
       cancellable = musicPlayer.state
         .objectWillChange
         .makeConnectable()
@@ -142,10 +148,10 @@ extension SwiftMusicKitPlugin {
             self?.eventSink?(self?.musicPlayer.state.jsonObject())
           }
         }
-      
+
       return nil
     }
-    
+
     func onCancel(withArguments arguments: Any?) -> FlutterError? {
       eventSink = nil
       playerTask?.cancel()
@@ -164,7 +170,7 @@ extension MusicPlayer.State: JSONEncodable {
     case repeatMode
     case shuffleMode
   }
-    
+
   public func encode(to encoder: Encoder) throws {
     var container = encoder.container(keyedBy: CodingKeys.self)
     try container.encode(playbackRate, forKey: .playbackRate)
@@ -183,7 +189,7 @@ extension MusicPlayer.PlaybackStatus {
     case .interrupted: return 3
     case .seekingBackward: return 4
     case .seekingForward: return 5
-    
+
     @unknown default:
       return 0
     }
@@ -200,7 +206,7 @@ extension MusicPlayer.RepeatMode {
       return 0
     }
   }
-  
+
   init(_ intValue: Int) {
     switch intValue {
     case 0:
@@ -224,7 +230,7 @@ extension MusicPlayer.ShuffleMode {
       return 0
     }
   }
-  
+
   init(_ intValue: Int) {
     switch intValue {
     case 0:
