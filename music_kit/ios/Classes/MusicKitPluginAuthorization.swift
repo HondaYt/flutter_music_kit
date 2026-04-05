@@ -37,7 +37,7 @@ extension MusicAuthorization.Status {
     case .restricted:
       return 3
     @unknown default:
-      fatalError()
+      return 2
     }
   }
 }

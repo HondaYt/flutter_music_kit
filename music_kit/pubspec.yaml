@@ -6,22 +6,20 @@ homepage: https://github.com/misiio/flutter_music_kit/tree/master/music_kit
 publish_to: none
 
 environment:
-    sdk: ">=2.18.2 <3.0.0"
-    flutter: ">=2.5.0"
+    sdk: ">=3.4.3 <4.0.0"
+    flutter: ">=3.24.0"
 
 dependencies:
     flutter:
         sdk: flutter
     # music_kit_platform_interface: ^1.1.0
     music_kit_platform_interface:
-        git:
-            url: https://github.com/HondaYt/flutter_music_kit.git
-            path: music_kit_platform_interface
+        path: ../music_kit_platform_interface
 
 dev_dependencies:
     flutter_test:
         sdk: flutter
-    flutter_lints: ^2.0.0
+    flutter_lints: ^5.0.0
 
 flutter:
     plugin:
